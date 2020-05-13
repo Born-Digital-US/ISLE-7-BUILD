@@ -1,0 +1,35 @@
+jobs:
+  build:
+    machine: true
+    working_directory: ~/isle
+    shell: /bin/bash --login
+    steps:
+      - checkout
+      # sed/replace some release number into feature branches in sample d-c (from this repo, with build instrs not remote images)
+      # git clone main ISLE repo
+      # replace D-C in main ISLE repo with the modified one above
+      # switch to test env by overwriting the .env
+      - run: ls
+  test:
+    docker:
+      - image: circleci/<language>:<version TAG>
+    steps:
+      - checkout
+      - run: ls
+  deploy:
+    docker:
+      - image: circleci/<language>:<version TAG>
+    steps:
+      - checkout
+      - run: ls
+workflows:
+  version: 2
+  build-test-and-deploy:
+    jobs:
+      - build
+      - test:
+          requires:
+            - build
+      - deploy:
+          requires:
+            - test
