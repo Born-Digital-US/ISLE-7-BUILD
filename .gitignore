@@ -69,4 +69,3 @@ passwords.md
 *.retry
 .vscode
 config/proxy/acme.json
-.env
