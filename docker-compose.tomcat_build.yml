@@ -1,0 +1,11 @@
+version: '3.7'
+
+## BUILD env for isle-tomcat image
+
+services:
+
+  tomcat:
+    image: borndigital/isle-tomcat:ISLE-v.1.5-dev
+    build:
+      context: https://github.com/Born-Digital-US/isle-tomcat.git#ISLE-v.1.5-dev
+    # args:

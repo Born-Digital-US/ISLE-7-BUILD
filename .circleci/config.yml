@@ -9,6 +9,8 @@ jobs:
       # git clone main ISLE repo
       # replace D-C in main ISLE repo with the modified one above
       # switch to test env by overwriting the .env
+      # git clone ISLE tomcat image as it needs to be built first as a base image https://github.com/Born-Digital-US/isle-tomcat
+      # ^ is this an additional docker-compose or dockerfile?
       - run: ls
   test:
     machine: true
