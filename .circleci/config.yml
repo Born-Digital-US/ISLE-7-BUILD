@@ -34,6 +34,7 @@ jobs:
             sudo curl -L "https://github.com/docker/compose/releases/download/1.25.5/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
             sudo chmod +x /usr/local/bin/docker-compose
       # First build the tomcat image then startup all containers like usual
+      - run: ls
       - run: docker-compose -f tomcat_build.yaml build docker-compose up -d
       - run: sleep 40
       - run:
