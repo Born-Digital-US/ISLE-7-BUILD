@@ -11,14 +11,16 @@ jobs:
       # switch to test env by overwriting the .env
       - run: ls
   test:
-    docker:
-      - image: circleci/<language>:<version TAG>
+    machine: true
+    working_directory: ~/isle
+    shell: /bin/bash --login
     steps:
       - checkout
       - run: ls
   deploy:
-    docker:
-      - image: circleci/<language>:<version TAG>
+    machine: true
+    working_directory: ~/isle
+    shell: /bin/bash --login
     steps:
       - checkout
       - run: ls
