@@ -11,6 +11,7 @@ jobs:
       # switch to test env by overwriting the .env
       # git clone ISLE tomcat image as it needs to be built first as a base image https://github.com/Born-Digital-US/isle-tomcat
       # ^ is this an additional docker-compose or dockerfile?
+      # docker-compose -f tomcat_build.yaml build docker-compose up -d
       - run: ls
   test:
     machine: true
