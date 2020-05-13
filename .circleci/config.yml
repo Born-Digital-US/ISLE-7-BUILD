@@ -26,6 +26,7 @@ jobs:
       - run:
           name: Switch to using TEST profile for docker-compose
           command: |
+            touch .env
             printf "COMPOSE_PROJECT_NAME=isle_test \nBASE_DOMAIN=isle.localdomain \nCONTAINER_SHORT_ID=td \nCOMPOSE_FILE=docker-compose.test.yml" > .env
       - run:
           name: Get docker-compose 1.25.5
