@@ -363,7 +363,7 @@ services:
     # args:    
     container_name: isle-varnish-${CONTAINER_SHORT_ID}
     env_file:
-      - production.env
+      - test.env
       - .env
     networks:
       isle-internal:
