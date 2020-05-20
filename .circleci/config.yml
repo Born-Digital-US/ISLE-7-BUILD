@@ -70,7 +70,7 @@ jobs:
       - run:
           name: Set up for BEHAT on remote server
           command: |
-            docker cp ~/build/ISLE/isle-behat isle-apache-td:/var/www/html/sites/behat
+            docker cp ~/build/isle-behat isle-apache-td:/var/www/html/sites/behat
             docker exec -it isle-apache-td bash -c "chown -R islandora:www-data /var/www/html/sites/behat/"
             docker exec -it isle-apache-td bash -c "cd /var/www/html/sites/behat && composer install "
             docker exec -it isle-apache-td bash -c "chmod 700 /var/www/html/sites/behat/run-isle-tests.sh"
