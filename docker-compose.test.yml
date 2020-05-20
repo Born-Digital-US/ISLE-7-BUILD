@@ -111,7 +111,7 @@ services:
 
 
   image-services:
-    image: ${DOCKERHUB_REPO}/isle-solr:${DOCKER_BUILD_TAG}
+    image: ${DOCKERHUB_REPO}/isle-imageservices:${DOCKER_BUILD_TAG}
     build:
       context: https://${GIT_HOSTER}/${GIT_USER}/isle-imageservices.git#${BUILD_BRANCH}
     container_name: isle-images-${CONTAINER_SHORT_ID}
@@ -140,7 +140,7 @@ services:
 
 
   apache:
-    image: ${DOCKERHUB_REPO}/isle-solr:${DOCKER_BUILD_TAG}
+    image: ${DOCKERHUB_REPO}/isle-apache:${DOCKER_BUILD_TAG}
     build:
       context: https://${GIT_HOSTER}/${GIT_USER}/isle-apache.git#${BUILD_BRANCH}   
     container_name: isle-apache-${CONTAINER_SHORT_ID}
