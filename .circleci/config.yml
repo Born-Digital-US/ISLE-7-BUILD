@@ -30,14 +30,12 @@ jobs:
       # First build the tomcat image then startup all containers like usual
       - run: cd ~/build/ISLE && docker-compose -f tomcat_build.yml build
       - run: cd ~/build/ISLE && docker-compose up -d
-      - run: docker ps -a
       - run: sleep 40
-      - run: docker ps -a
       - run:
           name: Start container and verify it's working
           command: |
             set -x
-            docker exec -it isle-apache-td bash /utility-scripts/isle_drupal_build_tools/isle_islandora_installer.sh
+            docker exec -it isle-apache-td bash -c "sh /utility-scripts/isle_drupal_build_tools/isle_islandora_installer.sh"
           no_output_timeout: 20m
       - run:
           name: Drush en basic dependencies
