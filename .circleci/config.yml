@@ -1,43 +1,35 @@
 jobs:
   build:
     machine: true
-    working_directory: ~/isle
+    working_directory: ~/build
     shell: /bin/bash --login
     steps:
       - checkout
-      # sed/replace some release number into feature branches in sample d-c (from this repo, with build instrs not remote images)
-      # git clone main ISLE repo
-      # replace D-C in main ISLE repo with the modified one above
-      # switch to test env by overwriting the .env
-      # git clone ISLE tomcat image as it needs to be built first as a base image https://github.com/Born-Digital-US/isle-tomcat
-      # ^ is this an additional docker-compose or dockerfile?
-      # docker-compose -f tomcat_build.yaml build docker-compose up -d
-      - run: ls
-
-      # - run:
-      #     name: Change main UID
-      #     command: sed -i 's/ISLANDORA_UID=1000/ISLANDORA_UID=1001/g' test.env
+      - run:
+          name: Clone latest ISLE & create the data directory
+          command: |
+            git clone -b ISLE-v.1.5-dev https://github.com/Born-Digital-US/ISLE.git ISLE
+            mkdir ~/build/ISLE/data
       - run:
           name: Fetch behat suite repo
           command: |
-            mkdir data
-            cd ~/isle
+            cd ~/build
             git clone https://github.com/Islandora-Collaboration-Group/isle-behat.git isle-behat
       - run:
           name: Switch to using TEST profile for docker-compose
           command: |
-            touch .env
-            printf "COMPOSE_PROJECT_NAME=isle_test \nBASE_DOMAIN=isle.localdomain \nCONTAINER_SHORT_ID=td \nCOMPOSE_FILE=docker-compose.test.yml" > .env
-            cat .env
+            cd ~/build
+            mv .env ~/build/ISLE/.env
+            mv docker-compose.test.yml ~/build/ISLE/docker-compose.test.yml
+            mv tomcat_build.yml ~/build/ISLE/tomcat_build.yml
       - run:
           name: Get docker-compose 1.25.5
           command: |
             sudo curl -L "https://github.com/docker/compose/releases/download/1.25.5/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
             sudo chmod +x /usr/local/bin/docker-compose
       # First build the tomcat image then startup all containers like usual
-      - run: ls -lha
-      - run: docker-compose -f tomcat_build.yml build
-      - run: docker-compose up -d
+      - run: cd ~/build/ISLE && docker-compose -f tomcat_build.yml build
+      - run: cd ~/build/ISLE && docker-compose up -d
       - run: sleep 40
       - run:
           name: Start container and verify it's working
@@ -56,7 +48,7 @@ jobs:
       - run:
           name: Set up Varnish
           command: |
-            docker cp ~/isle/scripts/varnish/isle_varnish_drupal_module_installer.sh isle-apache-td:/var/www/html/isle_varnish_drupal_module_installer.sh
+            docker cp ~/build/ISLE/scripts/varnish/isle_varnish_drupal_module_installer.sh isle-apache-td:/var/www/html/isle_varnish_drupal_module_installer.sh
             docker exec -it isle-apache-td bash -c "cd /var/www/html/ && chmod +x isle_varnish_drupal_module_installer.sh"
             docker exec -it isle-apache-td bash -c "cd /var/www/html && ./isle_varnish_drupal_module_installer.sh"
           no_output_timeout: 10m
@@ -76,11 +68,11 @@ jobs:
       - run:
           name: Set up for BEHAT on remote server
           command: |
-            docker cp ~/isle/isle-behat isle-apache-td:/var/www/html/sites/behat
+            docker cp ~/build/ISLE/isle-behat isle-apache-td:/var/www/html/sites/behat
             docker exec -it isle-apache-td bash -c "chown -R islandora:www-data /var/www/html/sites/behat/"
             docker exec -it isle-apache-td bash -c "cd /var/www/html/sites/behat && composer install "
             docker exec -it isle-apache-td bash -c "chmod 700 /var/www/html/sites/behat/run-isle-tests.sh"
-            sudo chmod -R 777 ~/isle/data/apache/html/sites/behat/debug
+            sudo chmod -R 777 ~/build/ISLE/data/apache/html/sites/behat/debug
       - run:
           name: Run the behat tests
           command: |
@@ -92,29 +84,23 @@ jobs:
           name: Fix artifact file permissions
           command: |
             sudo mkdir /home/circleci/artifacts
-            sudo cp -r /home/circleci/isle/data/apache/html/sites/behat/debug/ /home/circleci/artifacts
+            sudo cp -r /home/circleci/ISLE/data/apache/html/sites/behat/debug/ /home/circleci/artifacts
             sudo chown -R circleci:circleci /home/circleci/artifacts/
           when: always
       - store_artifacts:
           path: /home/circleci/artifacts/
           destination: behat-artifacts
 
-
-
-
-
-
-
   test:
     machine: true
-    working_directory: ~/isle
+    working_directory: ~/build
     shell: /bin/bash --login
     steps:
       - checkout
       - run: ls
   deploy:
     machine: true
-    working_directory: ~/isle
+    working_directory: ~/build
     shell: /bin/bash --login
     steps:
       - checkout

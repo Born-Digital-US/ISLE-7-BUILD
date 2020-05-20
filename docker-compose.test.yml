@@ -31,10 +31,10 @@ services:
 
 
   mysql:
-    # MySQl rarely if ever gets new branches. Simply build the image for updates.
+    # mysql rarely if ever gets new branches. Simply build the image with the master branch for updates.
+    image: ${DOCKERHUB_REPO}/isle-mysql:${DOCKER_BUILD_TAG}
     build:
-      context: https://github.com/Born-Digital-US/isle-mysql.git#master
-    # args:
+      context: https://${GIT_HOSTER}/${GIT_USER}/isle-mysql.git#master
     container_name: isle-mysql-${CONTAINER_SHORT_ID}
     env_file:
       - test.env
@@ -56,9 +56,9 @@ services:
 
 
   fedora:
+    image: ${DOCKERHUB_REPO}/isle-fedora:${DOCKER_BUILD_TAG}
     build:
-      context: https://github.com/Born-Digital-US/isle-fedora.git#ISLE-v.1.5-dev
-    # args:    
+      context: https://${GIT_HOSTER}/${GIT_USER}/isle-fedora.git#${BUILD_BRANCH}
     container_name: isle-fedora-${CONTAINER_SHORT_ID}
     environment:
       - JAVA_MAX_MEM=768M
@@ -86,9 +86,9 @@ services:
 
 
   solr:
+    image: ${DOCKERHUB_REPO}/isle-fedora:${DOCKER_BUILD_TAG}
     build:
-      context: https://github.com/Born-Digital-US/isle-solr.git#ISLE-v.1.5-dev
-    # args:     
+      context: https://${GIT_HOSTER}/${GIT_USER}/isle-solr.git#${BUILD_BRANCH}
     container_name: isle-solr-${CONTAINER_SHORT_ID}
     environment:
       - JAVA_MAX_MEM=512M
@@ -111,9 +111,9 @@ services:
 
 
   image-services:
+    image: ${DOCKERHUB_REPO}/isle-fedora:${DOCKER_BUILD_TAG}
     build:
-      context: https://github.com/Born-Digital-US/isle-imageservices.git#ISLE-v.1.5-dev
-    # args:     
+      context: https://${GIT_HOSTER}/${GIT_USER}/isle-imageservices.git#${BUILD_BRANCH}
     container_name: isle-images-${CONTAINER_SHORT_ID}
     environment:
       - JAVA_MAX_MEM=512M
@@ -140,9 +140,9 @@ services:
 
 
   apache:
+    image: ${DOCKERHUB_REPO}/isle-fedora:${DOCKER_BUILD_TAG}
     build:
-      context: https://github.com/Born-Digital-US/isle-apache.git#ISLE-v.1.5-dev
-    # args:      
+      context: https://${GIT_HOSTER}/${GIT_USER}/isle-apache.git#${BUILD_BRANCH}   
     container_name: isle-apache-${CONTAINER_SHORT_ID}
     env_file:
       - .env
@@ -330,9 +330,9 @@ services:
 # Start - Blazegraph service section
 
   isle-blazegraph:
+    image: ${DOCKERHUB_REPO}/isle-fedora:${DOCKER_BUILD_TAG}
     build:
-      context: https://github.com/Born-Digital-US/isle-blazegraph.git#ISLE-v.1.5-dev
-    # args:
+      context: https://${GIT_HOSTER}/${GIT_USER}/isle-blazegraph.git#${BUILD_BRANCH}  
     container_name: isle-blazegraph-${CONTAINER_SHORT_ID}
     environment:
       - JAVA_MAX_MEM=4096M
@@ -357,9 +357,10 @@ services:
 ## (Optional-component): Uncomment lines below to run ISLE with the Varnish cache
 
   varnish:
-    # varnish rarely if ever gets new branches. Simply build the image for updates.
+    # varnish rarely if ever gets new branches. Simply build the image with the master branch for updates.
+    image: ${DOCKERHUB_REPO}/isle-fedora:${DOCKER_BUILD_TAG}
     build:
-      context: https://github.com/Born-Digital-US/isle-varnish.git#master
+      context: https://${GIT_HOSTER}/${GIT_USER}/isle-varnish.git#master 
     # args:    
     container_name: isle-varnish-${CONTAINER_SHORT_ID}
     env_file:
