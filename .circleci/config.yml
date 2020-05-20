@@ -37,8 +37,6 @@ jobs:
           name: Start the Drupal installation script
           command: |
             set -x
-            docker ps -a
-            docker exec -it isle-apache-td bash -c "cd / && ls -lha && cd /utility-scripts/ && ls -lha"
             docker exec -it isle-apache-td bash /utility-scripts/isle_drupal_build_tools/isle_islandora_installer.sh                                           
           no_output_timeout: 20m
       - run:
@@ -94,6 +92,13 @@ jobs:
       - store_artifacts:
           path: /home/circleci/artifacts/
           destination: behat-artifacts
+
+      - run:
+          name: Push all new images to BD dockerhub
+          command: |
+            echo "$DOCKER_PASS" | docker login --username $DOCKER_USER --password-stdin
+            docker-compose push 
+          no_output_timeout: 20m
 
   test:
     machine: true
