@@ -86,7 +86,7 @@ services:
 
 
   solr:
-    image: ${DOCKERHUB_REPO}/isle-fedora:${DOCKER_BUILD_TAG}
+    image: ${DOCKERHUB_REPO}/isle-solr:${DOCKER_BUILD_TAG}
     build:
       context: https://${GIT_HOSTER}/${GIT_USER}/isle-solr.git#${BUILD_BRANCH}
     container_name: isle-solr-${CONTAINER_SHORT_ID}
@@ -111,7 +111,7 @@ services:
 
 
   image-services:
-    image: ${DOCKERHUB_REPO}/isle-fedora:${DOCKER_BUILD_TAG}
+    image: ${DOCKERHUB_REPO}/isle-solr:${DOCKER_BUILD_TAG}
     build:
       context: https://${GIT_HOSTER}/${GIT_USER}/isle-imageservices.git#${BUILD_BRANCH}
     container_name: isle-images-${CONTAINER_SHORT_ID}
@@ -140,7 +140,7 @@ services:
 
 
   apache:
-    image: ${DOCKERHUB_REPO}/isle-fedora:${DOCKER_BUILD_TAG}
+    image: ${DOCKERHUB_REPO}/isle-solr:${DOCKER_BUILD_TAG}
     build:
       context: https://${GIT_HOSTER}/${GIT_USER}/isle-apache.git#${BUILD_BRANCH}   
     container_name: isle-apache-${CONTAINER_SHORT_ID}
@@ -330,7 +330,7 @@ services:
 # Start - Blazegraph service section
 
   isle-blazegraph:
-    image: ${DOCKERHUB_REPO}/isle-fedora:${DOCKER_BUILD_TAG}
+    image: ${DOCKERHUB_REPO}/isle-blazegraph:${DOCKER_BUILD_TAG}
     build:
       context: https://${GIT_HOSTER}/${GIT_USER}/isle-blazegraph.git#${BUILD_BRANCH}  
     container_name: isle-blazegraph-${CONTAINER_SHORT_ID}
@@ -358,7 +358,7 @@ services:
 
   varnish:
     # varnish rarely if ever gets new branches. Simply build the image with the master branch for updates.
-    image: ${DOCKERHUB_REPO}/isle-fedora:${DOCKER_BUILD_TAG}
+    image: ${DOCKERHUB_REPO}/isle-varnish:${DOCKER_BUILD_TAG}
     build:
       context: https://${GIT_HOSTER}/${GIT_USER}/isle-varnish.git#master 
     # args:    
