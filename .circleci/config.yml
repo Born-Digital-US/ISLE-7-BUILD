@@ -96,7 +96,8 @@ jobs:
       - run:
           name: Push all new images to BD dockerhub
           command: |
-            echo "$DOCKER_PASS" | docker login --username $DOCKER_USER --password-stdin
+            cd ~/build/ISLE 
+            echo $DOCKER_PASS | docker login --username $DOCKER_USER --password-stdin docker.io
             docker-compose push 
           no_output_timeout: 20m
 
