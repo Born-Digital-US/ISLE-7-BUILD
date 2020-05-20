@@ -32,9 +32,11 @@ jobs:
       - run: cd ~/build/ISLE && docker-compose up -d
       - run: sleep 40
       - run:
-          name: Start container and verify it's working
+          name: Start the Drupal installation script
           command: |
             set -x
+            docker ps -a
+            docker exec -it isle-apache-td bash -c "cd / && ls -lha && cd /utility-scripts/ && ls -lha"
             docker exec -it isle-apache-td bash /utility-scripts/isle_drupal_build_tools/isle_islandora_installer.sh                                           
           no_output_timeout: 20m
       - run:
