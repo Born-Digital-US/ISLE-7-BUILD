@@ -118,8 +118,20 @@ jobs:
           command: |
             cd ~/build/ISLE 
             echo $DOCKER_PASS | docker login --username $DOCKER_USER --password-stdin docker.io
-            docker-compose push --ignore-push-failures
-          no_output_timeout: 30m
+            docker-compose push mysql --ignore-push-failures
+            sleep 10
+            docker-compose push fedora --ignore-push-failures
+            sleep 10
+            docker-compose push solr --ignore-push-failures
+            sleep 10            
+            docker-compose push image-services --ignore-push-failures
+            sleep 10            
+            docker-compose push apache --ignore-push-failures
+            sleep 10            
+            docker-compose push isle-blazegraph --ignore-push-failures
+            sleep 10            
+            docker-compose push varnish --ignore-push-failures
+          no_output_timeout: 40m
 
       - run:
           name: Build and tag all images as latest
