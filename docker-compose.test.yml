@@ -204,20 +204,20 @@ services:
 
 # Start - Automated Testing section
 
-  chrome:
-    image: selenium/node-chrome:3.141.59-neon # latest
-    container_name: isle-chrome-${CONTAINER_SHORT_ID}
-    environment:
-      - HUB_PORT=4444
-      - HUB_HOST=hub
-    networks:
-      - isle-internal
-    depends_on:
-      - apache
-      - hub
-    volumes:
-      - /dev/shm:/dev/shm
-      - ./data/apache/html:/var/www/html:ro
+#  chrome:
+#    image: selenium/node-chrome:3.141.59-neon # latest
+#    container_name: isle-chrome-${CONTAINER_SHORT_ID}
+#    environment:
+#      - HUB_PORT=4444
+#      - HUB_HOST=hub
+#    networks:
+#      - isle-internal
+#    depends_on:
+#      - apache
+#      - hub
+#    volumes:
+#      - /dev/shm:/dev/shm
+#      - ./data/apache/html:/var/www/html:ro
 
 
   hub:
