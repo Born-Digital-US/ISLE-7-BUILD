@@ -49,14 +49,6 @@ jobs:
             echo $DOCKER_PASS | docker login --username $DOCKER_USER --password-stdin docker.io
             docker-compose -f tomcat_build.yml push --ignore-push-failures
           no_output_timeout: 30m
-      - run:
-          name: Build and push the new tomcat image as latest
-          command: |
-            cd ~/build/ISLE
-            DOCKER_BUILD_TAG=latest docker-compose -f tomcat_build.yml build
-            echo $DOCKER_PASS | docker login --username $DOCKER_USER --password-stdin docker.io
-            DOCKER_BUILD_TAG=latest docker-compose push --ignore-push-failures
-          no_output_timeout: 30m
       # Then build all other ISLE images
       - run: cd ~/build/ISLE && docker-compose build
 #      - run: cd ~/build/ISLE && docker-compose up -d
