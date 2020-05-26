@@ -2,12 +2,12 @@ version: 2.1
 
 jobs:
   build:
-    # Parameters: true == BD branch (anything except master) & repo
-    # Parameters: false == ISLE branch (master) & repo
     parameters:
-      branch:
+      final_build:
         type: boolean
-        default: true
+        # default: true == ISLE branch (master) & repo
+        # default: false == BD branch (anything except master) & repo
+        default: false
     machine: true
     working_directory: ~/build
     shell: /bin/bash --login
@@ -15,21 +15,15 @@ jobs:
       - checkout
       # Change the BD branch below for testing and building new ISLE releases
       - when:
-          condition: << parameters.branch >>
+          condition: << parameters.final_build >>
           steps:
-             - run: echo "I am the BD Branch" && git clone -b ISLE-v.1.5-dev https://github.com/Born-Digital-US/ISLE.git ISLE && mkdir ~/build/ISLE/data
-                 #name: Clone the BD ISLE release branch
-                 #command: |
-                 #  git clone -b ISLE-v.1.5-dev https://github.com/Born-Digital-US/ISLE.git ISLE
-                 #  mkdir ~/build/ISLE/data
+            - run: echo "I am the ISLE branch" #&& git clone https://github.com/Islandora-Collaboration-Group/ISLE ISLE && mkdir ~/build/ISLE/data
+            - run: mv icg.env ~/build/ISLE/.env        
       - unless:
-          condition: << parameters.branch >>
+          condition: << parameters.final_build >>
           steps:
-             - run: echo "I am the ISLE branch"
-                 #name: Clone the ISLE master branch
-                 # command: |
-                 #   git clone https://github.com/Islandora-Collaboration-Group/ISLE ISLE
-                 #   mkdir ~/build/ISLE/data       
+            - run: echo "I am the BD Branch" && git clone -b ISLE-v.1.5-dev https://github.com/Born-Digital-US/ISLE.git ISLE && mkdir ~/build/ISLE/data
+            - run: mv bd.env ~/build/ISLE/.env
       - run:
           name: Fetch behat suite repo
           command: |
@@ -39,7 +33,6 @@ jobs:
           name: Switch to using TEST profile for docker-compose
           command: |
             cd ~/build
-            mv .env ~/build/ISLE/.env
             mv docker-compose.test.yml ~/build/ISLE/docker-compose.test.yml
             mv tomcat_build.yml ~/build/ISLE/tomcat_build.yml
       - run:
@@ -130,28 +123,8 @@ jobs:
             docker-compose push
           no_output_timeout: 20m
 
-  test:
-    machine: true
-    working_directory: ~/build
-    shell: /bin/bash --login
-    steps:
-      - checkout
-      - run: ls
-  deploy:
-    machine: true
-    working_directory: ~/build
-    shell: /bin/bash --login
-    steps:
-      - checkout
-      - run: ls
 workflows:
   version: 2
-  build-test-and-deploy:
+  build-and-push:
     jobs:
       - build
-      - test:
-          requires:
-            - build
-      - deploy:
-          requires:
-            - test
