@@ -55,123 +55,123 @@ services:
         tag: "{{.Name}}"
 
 
-#  fedora:
-#    image: ${DOCKERHUB_REPO}/isle-fedora:${DOCKER_BUILD_TAG}
-#    build:
-#      context: https://${GIT_HOSTER}/${GIT_USER}/isle-fedora.git#${BUILD_BRANCH}
-#    container_name: isle-fedora-${CONTAINER_SHORT_ID}
-#    environment:
-#      - JAVA_MAX_MEM=768M
-#      - JAVA_MIN_MEM=128M
-#    env_file:
-#      - test.env
-#    networks:
-#      - isle-internal
-#    ports:
-#      - "8081:8080"
-#    depends_on:
-#      - mysql
-#      - solr
-#    volumes:
-#      - isle-fedora-datastreamStore:/usr/local/fedora/data/datastreamStore # (Optional) Migrators can change this to your local DS folder instead of using a Docker volume.
-#      - isle-fedora-objectStore:/usr/local/fedora/data/objectStore # (Optional) Migrators can change this to your local OS folder instead of using a Docker volume.
-#      - isle-fedora-resourceIndex:/usr/local/fedora/data/resourceIndex # (Optional) Migrators can change this to your local RI folder instead of using a Docker volume.
-#      - isle-fedora-activemq:/usr/local/fedora/data/activemq-data # (Optional) Migrators can change this to your local MQ folder instead of using a Docker volume.
-#      - isle-fedora-XACML:/usr/local/fedora/data/fedora-xacml-policies
-#    ## (Optional): Uncomment lines below to run ISLE with the TICK monitoring system
-#    logging:
-#      driver: syslog
-#      options:
-#        tag: "{{.Name}}"
+  fedora:
+    image: ${DOCKERHUB_REPO}/isle-fedora:${DOCKER_BUILD_TAG}
+    build:
+      context: https://${GIT_HOSTER}/${GIT_USER}/isle-fedora.git#${BUILD_BRANCH}
+    container_name: isle-fedora-${CONTAINER_SHORT_ID}
+    environment:
+      - JAVA_MAX_MEM=768M
+      - JAVA_MIN_MEM=128M
+    env_file:
+      - test.env
+    networks:
+      - isle-internal
+    ports:
+      - "8081:8080"
+    depends_on:
+      - mysql
+      - solr
+    volumes:
+      - isle-fedora-datastreamStore:/usr/local/fedora/data/datastreamStore # (Optional) Migrators can change this to your local DS folder instead of using a Docker volume.
+      - isle-fedora-objectStore:/usr/local/fedora/data/objectStore # (Optional) Migrators can change this to your local OS folder instead of using a Docker volume.
+      - isle-fedora-resourceIndex:/usr/local/fedora/data/resourceIndex # (Optional) Migrators can change this to your local RI folder instead of using a Docker volume.
+      - isle-fedora-activemq:/usr/local/fedora/data/activemq-data # (Optional) Migrators can change this to your local MQ folder instead of using a Docker volume.
+      - isle-fedora-XACML:/usr/local/fedora/data/fedora-xacml-policies
+    ## (Optional): Uncomment lines below to run ISLE with the TICK monitoring system
+    logging:
+      driver: syslog
+      options:
+        tag: "{{.Name}}"
 
 
-#  solr:
-#    image: ${DOCKERHUB_REPO}/isle-solr:${DOCKER_BUILD_TAG}
-#    build:
-#      context: https://${GIT_HOSTER}/${GIT_USER}/isle-solr.git#${BUILD_BRANCH}
-#    container_name: isle-solr-${CONTAINER_SHORT_ID}
-#    environment:
-#      - JAVA_MAX_MEM=512M
-#      - JAVA_MIN_MEM=0
-#    env_file:
-#      - test.env
-#    networks:
-#      - isle-internal
-#    ports:
-#      - "8082:8080"
-#    depends_on:
-#      - mysql
-#    volumes:
-#      - isle-solr-data:/usr/local/solr
-#    ## (Optional): Uncomment lines below to run ISLE with the TICK monitoring system
-#    logging:
-#      driver: syslog
-#      options:
-#        tag: "{{.Name}}"
+  solr:
+    image: ${DOCKERHUB_REPO}/isle-solr:${DOCKER_BUILD_TAG}
+    build:
+      context: https://${GIT_HOSTER}/${GIT_USER}/isle-solr.git#${BUILD_BRANCH}
+    container_name: isle-solr-${CONTAINER_SHORT_ID}
+    environment:
+      - JAVA_MAX_MEM=512M
+      - JAVA_MIN_MEM=0
+    env_file:
+      - test.env
+    networks:
+      - isle-internal
+    ports:
+      - "8082:8080"
+    depends_on:
+      - mysql
+    volumes:
+      - isle-solr-data:/usr/local/solr
+    ## (Optional): Uncomment lines below to run ISLE with the TICK monitoring system
+    logging:
+      driver: syslog
+      options:
+        tag: "{{.Name}}"
 
 
-#  image-services:
-#    image: ${DOCKERHUB_REPO}/isle-imageservices:${DOCKER_BUILD_TAG}
-#    build:
-#      context: https://${GIT_HOSTER}/${GIT_USER}/isle-imageservices.git#${BUILD_BRANCH}
-#    container_name: isle-images-${CONTAINER_SHORT_ID}
-#    environment:
-#      - JAVA_MAX_MEM=512M
-#      - JAVA_MIN_MEM=0
-#    env_file:
-#      - test.env
-#    networks:
-#      - isle-internal
-#    depends_on:
-#      - apache
-#      - fedora
-#    ports:
-#      - "8083:8080"
-#    labels:
-#      - traefik.docker.network=${COMPOSE_PROJECT_NAME}_isle-internal
-#      ## Making image-services accessible via traefik is not safe and not recommended
-#      - traefik.enable=false
-#      - "traefik.frontend.rule=Host:images.${BASE_DOMAIN}; PathPrefix: /, /cantaloupe"
-#    ## (Optional): Uncomment lines below to run ISLE with the TICK monitoring system
-#    logging:
-#      driver: syslog
-#      options:
-#        tag: "{{.Name}}"
+  image-services:
+    image: ${DOCKERHUB_REPO}/isle-imageservices:${DOCKER_BUILD_TAG}
+    build:
+      context: https://${GIT_HOSTER}/${GIT_USER}/isle-imageservices.git#${BUILD_BRANCH}
+    container_name: isle-images-${CONTAINER_SHORT_ID}
+    environment:
+      - JAVA_MAX_MEM=512M
+      - JAVA_MIN_MEM=0
+    env_file:
+      - test.env
+    networks:
+      - isle-internal
+    depends_on:
+      - apache
+      - fedora
+    ports:
+      - "8083:8080"
+    labels:
+      - traefik.docker.network=${COMPOSE_PROJECT_NAME}_isle-internal
+      ## Making image-services accessible via traefik is not safe and not recommended
+      - traefik.enable=false
+      - "traefik.frontend.rule=Host:images.${BASE_DOMAIN}; PathPrefix: /, /cantaloupe"
+    ## (Optional): Uncomment lines below to run ISLE with the TICK monitoring system
+    logging:
+      driver: syslog
+      options:
+        tag: "{{.Name}}"
 
 
-#  apache:
-#    image: ${DOCKERHUB_REPO}/isle-apache:${DOCKER_BUILD_TAG}
-#    build:
-#      context: https://${GIT_HOSTER}/${GIT_USER}/isle-apache.git#${BUILD_BRANCH}   
-#    container_name: isle-apache-${CONTAINER_SHORT_ID}
-#    env_file:
-#      - .env
-#      - test.env
-#    networks:
-#      isle-internal:
-#    depends_on:
-#      - mysql
-#      - fedora
-#      - solr
-#      - traefik
-#    volumes:
-#      # Customization: Bind mounting Drupal Code instead of using default Docker volumes for local development with an IDE.
-#      ## The next line is a suggested path and users can change values to the left of the : to match their Apache data folder of choice.
-#      - ./data/apache/html:/var/www/html:cached
-#      # Customization: Separate settings.php files based on environment.
-#      - ./config/apache/settings_php/settings.test.php:/var/www/html/sites/default/settings.php
-#      ## (Optional): Uncomment line below to allow bind mounting of the php.ini file for editing of php memory, upload and max_post values.
-#      #- ./config/apache/php_ini/php.test.ini:/etc/php/7.1/apache2/php.ini
-#    labels:
-#      - traefik.docker.network=${COMPOSE_PROJECT_NAME}_isle-internal
-#      - traefik.enable=true
-#      # BELOW line commented out to allow Varnish to handle requests in front of Apache
-#      # - "traefik.frontend.rule=Host:${BASE_DOMAIN}; PathPrefix: /, /cantaloupe"
-#    ## (Optional): Uncomment lines below to run ISLE with the TICK monitoring system
-#    logging:
-#      driver: syslog
-#      options:
-#        tag: "{{.Name}}"
+  apache:
+    image: ${DOCKERHUB_REPO}/isle-apache:${DOCKER_BUILD_TAG}
+    build:
+      context: https://${GIT_HOSTER}/${GIT_USER}/isle-apache.git#${BUILD_BRANCH}   
+    container_name: isle-apache-${CONTAINER_SHORT_ID}
+    env_file:
+      - .env
+      - test.env
+    networks:
+      isle-internal:
+    depends_on:
+      - mysql
+      - fedora
+      - solr
+      - traefik
+    volumes:
+      # Customization: Bind mounting Drupal Code instead of using default Docker volumes for local development with an IDE.
+      ## The next line is a suggested path and users can change values to the left of the : to match their Apache data folder of choice.
+      - ./data/apache/html:/var/www/html:cached
+      # Customization: Separate settings.php files based on environment.
+      - ./config/apache/settings_php/settings.test.php:/var/www/html/sites/default/settings.php
+      ## (Optional): Uncomment line below to allow bind mounting of the php.ini file for editing of php memory, upload and max_post values.
+      #- ./config/apache/php_ini/php.test.ini:/etc/php/7.1/apache2/php.ini
+    labels:
+      - traefik.docker.network=${COMPOSE_PROJECT_NAME}_isle-internal
+      - traefik.enable=true
+      # BELOW line commented out to allow Varnish to handle requests in front of Apache
+      # - "traefik.frontend.rule=Host:${BASE_DOMAIN}; PathPrefix: /, /cantaloupe"
+    ## (Optional): Uncomment lines below to run ISLE with the TICK monitoring system
+    logging:
+      driver: syslog
+      options:
+        tag: "{{.Name}}"
 
 
   traefik:
@@ -204,20 +204,20 @@ services:
 
 # Start - Automated Testing section
 
-#  chrome:
-#    image: selenium/node-chrome:3.141.59-neon # latest
-#    container_name: isle-chrome-${CONTAINER_SHORT_ID}
-#    environment:
-#      - HUB_PORT=4444
-#      - HUB_HOST=hub
-#    networks:
-#      - isle-internal
-#    depends_on:
-#      - apache
-#      - hub
-#    volumes:
-#      - /dev/shm:/dev/shm
-#      - ./data/apache/html:/var/www/html:ro
+  chrome:
+    image: selenium/node-chrome:3.141.59-neon # latest
+    container_name: isle-chrome-${CONTAINER_SHORT_ID}
+    environment:
+      - HUB_PORT=4444
+      - HUB_HOST=hub
+    networks:
+      - isle-internal
+    depends_on:
+      - apache
+      - hub
+    volumes:
+      - /dev/shm:/dev/shm
+      - ./data/apache/html:/var/www/html:ro
 
 
   hub:
@@ -329,26 +329,26 @@ services:
 
 # Start - Blazegraph service section
 
-#  isle-blazegraph:
-#    image: ${DOCKERHUB_REPO}/isle-blazegraph:${DOCKER_BUILD_TAG}
-#    build:
-#      context: https://${GIT_HOSTER}/${GIT_USER}/isle-blazegraph.git#${BUILD_BRANCH}  
-#    container_name: isle-blazegraph-${CONTAINER_SHORT_ID}
-#    environment:
-#      - JAVA_MAX_MEM=4096M
-#      - JAVA_MIN_MEM=1024M
-#    env_file:
-#      - test.env
-#    networks:
-#      - isle-internal
-#    ports:
-#      - "8084:8080"
-#    volumes:
-#      - isle-blazegraph-data:/var/bigdata
-#    logging:
-#      driver: syslog
-#      options:
-#        tag: "{{.Name}}"
+  isle-blazegraph:
+    image: ${DOCKERHUB_REPO}/isle-blazegraph:${DOCKER_BUILD_TAG}
+    build:
+      context: https://${GIT_HOSTER}/${GIT_USER}/isle-blazegraph.git#${BUILD_BRANCH}  
+    container_name: isle-blazegraph-${CONTAINER_SHORT_ID}
+    environment:
+      - JAVA_MAX_MEM=4096M
+      - JAVA_MIN_MEM=1024M
+    env_file:
+      - test.env
+    networks:
+      - isle-internal
+    ports:
+      - "8084:8080"
+    volumes:
+      - isle-blazegraph-data:/var/bigdata
+    logging:
+      driver: syslog
+      options:
+        tag: "{{.Name}}"
 
 # END - Blazegraph service section
 
@@ -356,33 +356,33 @@ services:
 # Start - Varnish service section
 ## (Optional-component): Uncomment lines below to run ISLE with the Varnish cache
 
-#  varnish:
-#    # varnish rarely if ever gets new branches. Simply build the image with the master branch for updates.
-#    image: ${DOCKERHUB_REPO}/isle-varnish:${DOCKER_BUILD_TAG}
-#    build:
-#      context: https://${GIT_HOSTER}/${GIT_USER}/isle-varnish.git#master 
-#    # args:    
-#    container_name: isle-varnish-${CONTAINER_SHORT_ID}
-#    env_file:
-#      - test.env
-#      - .env
-#    networks:
-#      isle-internal:
-#    depends_on:
-#      - mysql
-#      - fedora
-#      - solr
-#      - apache
-#      - traefik
-#    labels:
-#      - traefik.docker.network=${COMPOSE_PROJECT_NAME}_isle-internal
-#      - traefik.port=6081
-#      - traefik.enable=true
-#      - "traefik.frontend.rule=Host:${BASE_DOMAIN}; PathPrefix: /, /cantaloupe"
-#    logging:
-#      driver: syslog
-#      options:
-#        tag: "{{.Name}}"
+  varnish:
+    # varnish rarely if ever gets new branches. Simply build the image with the master branch for updates.
+    image: ${DOCKERHUB_REPO}/isle-varnish:${DOCKER_BUILD_TAG}
+    build:
+      context: https://${GIT_HOSTER}/${GIT_USER}/isle-varnish.git#master 
+    # args:    
+    container_name: isle-varnish-${CONTAINER_SHORT_ID}
+    env_file:
+      - test.env
+      - .env
+    networks:
+      isle-internal:
+    depends_on:
+      - mysql
+      - fedora
+      - solr
+      - apache
+      - traefik
+    labels:
+      - traefik.docker.network=${COMPOSE_PROJECT_NAME}_isle-internal
+      - traefik.port=6081
+      - traefik.enable=true
+      - "traefik.frontend.rule=Host:${BASE_DOMAIN}; PathPrefix: /, /cantaloupe"
+    logging:
+      driver: syslog
+      options:
+        tag: "{{.Name}}"
 
 # END - Varnish service section
 
