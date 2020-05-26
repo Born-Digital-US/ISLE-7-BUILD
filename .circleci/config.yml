@@ -2,16 +2,28 @@ version: 2.1
 
 jobs:
   build:
+    # Parameters are if master then ISLE build if not then BD build
+    parameters:
+      branch:
+        type: boolean
+        default: true
     machine: true
     working_directory: ~/build
     shell: /bin/bash --login
     steps:
       - checkout
-      - run:
-          name: Clone latest ISLE & create the data directory
-          command: |
-            git clone -b ISLE-v.1.5-dev https://github.com/Born-Digital-US/ISLE.git ISLE
-            mkdir ~/build/ISLE/data
+      - run: echo "Clone latest BD ISLE & create the data directory"
+      - when:
+          condition: << parameters.branch >>
+          steps:
+             - run: echo "I am the BD Branch"
+      #      command: |
+      #        git clone -b ISLE-v.1.5-dev https://github.com/Born-Digital-US/ISLE.git ISLE
+      #        mkdir ~/build/ISLE/data
+      - unless:
+          condition: << parameters.branch >>
+          steps:
+             - run: echo "I am the ISLE branch"
       - run:
           name: Fetch behat suite repo
           command: |
