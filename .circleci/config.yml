@@ -2,7 +2,8 @@ version: 2.1
 
 jobs:
   build:
-    # Parameters are if master then ISLE build if not then BD build
+    # Parameters: true == BD branch (anything except master) & repo
+    # Parameters: false == ISLE branch (master) & repo
     parameters:
       branch:
         type: boolean
@@ -12,18 +13,23 @@ jobs:
     shell: /bin/bash --login
     steps:
       - checkout
-      - run: echo "Clone latest BD ISLE & create the data directory"
+      # Change the BD branch below for testing and building new ISLE releases
       - when:
           condition: << parameters.branch >>
           steps:
              - run: echo "I am the BD Branch"
-      #      command: |
-      #        git clone -b ISLE-v.1.5-dev https://github.com/Born-Digital-US/ISLE.git ISLE
-      #        mkdir ~/build/ISLE/data
+                 name: Clone the BD ISLE release branch
+                 command: |
+                   git clone -b ISLE-v.1.5-dev https://github.com/Born-Digital-US/ISLE.git ISLE
+                   mkdir ~/build/ISLE/data
       - unless:
           condition: << parameters.branch >>
           steps:
              - run: echo "I am the ISLE branch"
+                 name: Clone the ISLE master branch
+                 # command: |
+                 #   git clone https://github.com/Islandora-Collaboration-Group/ISLE ISLE
+                 #   mkdir ~/build/ISLE/data       
       - run:
           name: Fetch behat suite repo
           command: |
@@ -41,58 +47,60 @@ jobs:
           command: |
             sudo curl -L "https://github.com/docker/compose/releases/download/1.25.5/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
             sudo chmod +x /usr/local/bin/docker-compose
-      # First build the tomcat image then startup all containers like usual
+      # First build the tomcat image
       - run: cd ~/build/ISLE && docker-compose -f tomcat_build.yml build
-      - run: cd ~/build/ISLE && docker-compose up -d
-      - run: sleep 40
-      - run:
-          name: Start the Drupal installation script
-          command: |
-            set -x
-            docker exec -it isle-apache-td bash /utility-scripts/isle_drupal_build_tools/isle_islandora_installer.sh                                           
-          no_output_timeout: 20m
-      - run:
-          name: Drush en basic dependencies
-          command: |
-            docker exec -it isle-apache-td bash -c "cd /var/www/html/sites/all/modules/islandora && git clone https://github.com/Islandora-Labs/islandora_solution_pack_oralhistories.git"
-            docker exec -it isle-apache-td bash -c "cd /var/www/html && drush -y -u 1 en islandora_oralhistories"
-            docker exec -it isle-apache-td bash -c "cd /var/www/html && drush dis overlay -y"
-            sudo -- sh -c "echo 127.0.0.1 isle.localdomain >> /etc/hosts"
-          no_output_timeout: 20m
-      - run:
-          name: Set up Varnish
-          command: |
-            docker cp ~/build/ISLE/scripts/varnish/isle_varnish_drupal_module_installer.sh isle-apache-td:/var/www/html/isle_varnish_drupal_module_installer.sh
-            docker exec -it isle-apache-td bash -c "cd /var/www/html/ && chmod +x isle_varnish_drupal_module_installer.sh"
-            docker exec -it isle-apache-td bash -c "cd /var/www/html && ./isle_varnish_drupal_module_installer.sh"
-          no_output_timeout: 10m
-      - run:
-          # While we don't need these if we're not doing bulk ingest, sometimes they are dependencies for batch functions
-          name: Drush en batch dependencies
-          command: |
-            docker exec -it isle-apache-td bash -c "cd /var/www/html && drush -y -u 1 en islandora_batch"
-            docker exec -it isle-apache-td bash -c "cd /var/www/html/sites/all/modules/islandora && git clone https://github.com/mjordan/islandora_batch_with_derivs.git"
-            docker exec -it isle-apache-td bash -c "cd /var/www/html && drush -y -u 1 en islandora_batch_with_derivs"
-            docker exec -it isle-apache-td bash -c "cd /var/www/html && drush -y -u 1 en islandora_book_batch"
-            docker exec -it isle-apache-td bash -c "cd /var/www/html && drush -y -u 1 en islandora_newspaper_batch"
-            docker exec -it isle-apache-td bash -c "cd /var/www/html/sites/all/modules/islandora && git clone https://github.com/MarcusBarnes/islandora_compound_batch.git"
-            docker exec -it isle-apache-td bash -c "cd /var/www/html && drush -y -u 1 en islandora_compound_batch"
-          no_output_timeout: 20m
-
-      - run:
-          name: Set up for BEHAT on remote server
-          command: |
-            docker cp ~/build/isle-behat isle-apache-td:/var/www/html/sites/behat
-            docker exec -it isle-apache-td bash -c "chown -R islandora:www-data /var/www/html/sites/behat/"
-            docker exec -it isle-apache-td bash -c "cd /var/www/html/sites/behat && composer install "
-            docker exec -it isle-apache-td bash -c "chmod 700 /var/www/html/sites/behat/run-isle-tests.sh"
-            sudo chmod -R 777 ~/build/ISLE/data/apache/html/sites/behat/debug
-      - run:
-          name: Run the behat tests
-          command: |
-            docker exec -it isle-apache-td bash -c "cd /var/www/html/sites/behat && ./run-isle-tests.sh --run=services"
-            docker exec -it isle-apache-td bash -c "cd /var/www/html/sites/behat && ./run-isle-tests.sh --run=apache"
-          no_output_timeout: 20m
+      # Then build all other ISLE images
+      - run: cd ~/build/ISLE && docker-compose build
+#      - run: cd ~/build/ISLE && docker-compose up -d
+#      - run: sleep 40
+#      - run:
+#          name: Start the Drupal installation script
+#          command: |
+#            set -x
+#            docker exec -it isle-apache-td bash /utility-scripts/isle_drupal_build_tools/isle_islandora_installer.sh                                           
+#          no_output_timeout: 20m
+#      - run:
+#          name: Drush en basic dependencies
+#          command: |
+#            docker exec -it isle-apache-td bash -c "cd /var/www/html/sites/all/modules/islandora && git clone https://github.com/Islandora-Labs/islandora_solution_pack_oralhistories.git"
+#            docker exec -it isle-apache-td bash -c "cd /var/www/html && drush -y -u 1 en islandora_oralhistories"
+#            docker exec -it isle-apache-td bash -c "cd /var/www/html && drush dis overlay -y"
+#            sudo -- sh -c "echo 127.0.0.1 isle.localdomain >> /etc/hosts"
+#          no_output_timeout: 20m
+#      - run:
+#          name: Set up Varnish
+#          command: |
+#            docker cp ~/build/ISLE/scripts/varnish/isle_varnish_drupal_module_installer.sh isle-apache-td:/var/www/html/isle_varnish_drupal_module_installer.sh
+#            docker exec -it isle-apache-td bash -c "cd /var/www/html/ && chmod +x isle_varnish_drupal_module_installer.sh"
+#            docker exec -it isle-apache-td bash -c "cd /var/www/html && ./isle_varnish_drupal_module_installer.sh"
+#          no_output_timeout: 10m
+#      - run:
+#          # While we don't need these if we're not doing bulk ingest, sometimes they are dependencies for batch functions
+#          name: Drush en batch dependencies
+#          command: |
+#            docker exec -it isle-apache-td bash -c "cd /var/www/html && drush -y -u 1 en islandora_batch"
+#            docker exec -it isle-apache-td bash -c "cd /var/www/html/sites/all/modules/islandora && git clone https://github.com/mjordan/islandora_batch_with_derivs.git"
+#            docker exec -it isle-apache-td bash -c "cd /var/www/html && drush -y -u 1 en islandora_batch_with_derivs"
+#            docker exec -it isle-apache-td bash -c "cd /var/www/html && drush -y -u 1 en islandora_book_batch"
+#            docker exec -it isle-apache-td bash -c "cd /var/www/html && drush -y -u 1 en islandora_newspaper_batch"
+#            docker exec -it isle-apache-td bash -c "cd /var/www/html/sites/all/modules/islandora && git clone https://github.com/MarcusBarnes/islandora_compound_batch.git"
+#            docker exec -it isle-apache-td bash -c "cd /var/www/html && drush -y -u 1 en islandora_compound_batch"
+#          no_output_timeout: 20m
+#
+#      - run:
+#          name: Set up for BEHAT on remote server
+#          command: |
+#            docker cp ~/build/isle-behat isle-apache-td:/var/www/html/sites/behat
+#            docker exec -it isle-apache-td bash -c "chown -R islandora:www-data /var/www/html/sites/behat/"
+#            docker exec -it isle-apache-td bash -c "cd /var/www/html/sites/behat && composer install "
+#            docker exec -it isle-apache-td bash -c "chmod 700 /var/www/html/sites/behat/run-isle-tests.sh"
+#            sudo chmod -R 777 ~/build/ISLE/data/apache/html/sites/behat/debug
+#      - run:
+#          name: Run the behat tests
+#          command: |
+#            docker exec -it isle-apache-td bash -c "cd /var/www/html/sites/behat && ./run-isle-tests.sh --run=services"
+#            docker exec -it isle-apache-td bash -c "cd /var/www/html/sites/behat && ./run-isle-tests.sh --run=apache"
+#          no_output_timeout: 20m
 
       - run:
           name: Fix artifact file permissions
@@ -111,6 +119,15 @@ jobs:
             cd ~/build/ISLE 
             echo $DOCKER_PASS | docker login --username $DOCKER_USER --password-stdin docker.io
             docker-compose push 
+          no_output_timeout: 20m
+
+      - run:
+          name: Build and tag all images as latest
+          command: |
+            cd ~/build/ISLE
+            DOCKER_BUILD_TAG=latest docker-compose build
+            echo $DOCKER_PASS | docker login --username $DOCKER_USER --password-stdin docker.io
+            docker-compose push
           no_output_timeout: 20m
 
   test:
