@@ -42,6 +42,21 @@ jobs:
             sudo chmod +x /usr/local/bin/docker-compose
       # First build the tomcat image
       - run: cd ~/build/ISLE && docker-compose -f tomcat_build.yml build
+      - run:
+          name: Push the new tomcat image to BD dockerhub
+          command: |
+            cd ~/build/ISLE 
+            echo $DOCKER_PASS | docker login --username $DOCKER_USER --password-stdin docker.io
+            docker-compose -f tomcat_build.yml push 
+          no_output_timeout: 20m
+      - run:
+          name: Build and push the new tomcat image as latest
+          command: |
+            cd ~/build/ISLE
+            DOCKER_BUILD_TAG=latest docker-compose build
+            echo $DOCKER_PASS | docker login --username $DOCKER_USER --password-stdin docker.io
+            DOCKER_BUILD_TAG=latest docker-compose push
+          no_output_timeout: 20m
       # Then build all other ISLE images
       - run: cd ~/build/ISLE && docker-compose build
 #      - run: cd ~/build/ISLE && docker-compose up -d
@@ -120,7 +135,7 @@ jobs:
             cd ~/build/ISLE
             DOCKER_BUILD_TAG=latest docker-compose build
             echo $DOCKER_PASS | docker login --username $DOCKER_USER --password-stdin docker.io
-            docker-compose push
+            DOCKER_BUILD_TAG=latest docker-compose push
           no_output_timeout: 20m
 
 workflows:
