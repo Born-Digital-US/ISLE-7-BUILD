@@ -17,16 +17,16 @@ jobs:
       - when:
           condition: << parameters.branch >>
           steps:
-             - run: echo "I am the BD Branch"
-                 name: Clone the BD ISLE release branch
-                 command: |
-                   git clone -b ISLE-v.1.5-dev https://github.com/Born-Digital-US/ISLE.git ISLE
-                   mkdir ~/build/ISLE/data
+             - run: echo "I am the BD Branch" && git clone -b ISLE-v.1.5-dev https://github.com/Born-Digital-US/ISLE.git ISLE && mkdir ~/build/ISLE/data
+                 #name: Clone the BD ISLE release branch
+                 #command: |
+                 #  git clone -b ISLE-v.1.5-dev https://github.com/Born-Digital-US/ISLE.git ISLE
+                 #  mkdir ~/build/ISLE/data
       - unless:
           condition: << parameters.branch >>
           steps:
              - run: echo "I am the ISLE branch"
-                 name: Clone the ISLE master branch
+                 #name: Clone the ISLE master branch
                  # command: |
                  #   git clone https://github.com/Islandora-Collaboration-Group/ISLE ISLE
                  #   mkdir ~/build/ISLE/data       
