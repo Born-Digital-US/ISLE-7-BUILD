@@ -1,0 +1,10 @@
+version: '3.7'
+
+## BUILD env for isle-tomcat image
+
+services:
+
+  tomcat:
+    image: ${DOCKERHUB_REPO}/isle-tomcat:${DOCKER_BUILD_TAG}
+    build:
+      context: https://${GIT_HOSTER}/${GIT_USER}/isle-tomcat.git#${BUILD_BRANCH}
